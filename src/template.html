@@ -627,12 +627,7 @@ function stripInner(){
     // effective chat price = astrologer rate ÷ (wallet credit ÷ amount paid)
     const perMin = Math.round(ASTRO_RATE * ab.sel / (ab.sel + b)); // whole rupees
     const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
-    /* ASTRO50 is a flat ₹50, so it is worth relatively less on a bigger recharge and the
-       effective rate climbs (₹13 -> ₹16 -> ₹18). Showing it there reads as a penalty for
-       recharging more, so the rate is omitted on the coupon and offer screens. */
-    const showRate = ab.mode!=='offer' && ab.mode!=='coupon';
-    const rate = ` <b>at&nbsp;₹${perMin}/min</b>`;
-    const tail = flowAstro ? ` to chat with ${nm}${showRate?rate:''}` : (showRate?` to chat${rate}`:'');
+    const tail = ab.mode==='offer' ? ` to chat with ${nm}` : flowAstro ? ` to chat with ${nm} <b>at&nbsp;₹${perMin}/min</b>` : ` to chat <b>at&nbsp;₹${perMin}/min</b>`;
     return `<div class="strip gx"><span>You Get <b>₹${fmt(b)} Extra</b>${tail}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>Earn <b>₹${fmt(bonusFor(250))} Extra</b> On <b>₹250</b> Recharge</span></div>`;
