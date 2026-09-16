@@ -1,6 +1,6 @@
 # AstroChat · Bonus highlight prototype
 
-Interactive HTML prototype of the Add Money to Wallet flow (Payments-Android).
+Interactive HTML prototype of the Add Money to Wallet flow.
 
 ## Open it
 Double-click **index.html**. It's one self-contained file (all icons embedded), so it works offline and can be committed or hosted as-is.
@@ -28,8 +28,5 @@ Double-click **index.html**. It's one self-contained file (all icons embedded), 
 - GST 18% on the recharge amount; wallet credit = amount + bonus
 - Count-up animation plays once per amount per visit; ₹50 (no bonus) never animates
 - Rays show at ₹250 and above
-
-## Figma source
-File `n4w0LNq0m3zOpsUxnhWlQ8` (Payments-Android). Nodes used include 4680-11879 (nav), 4683-1267 (wallet tab), 4683-1297 / 4683-1302 (amount styles), 4683-1287 (₹50 strip), 4573-1698 (green strip), 4683-1220 (bonus badge), 4691-13481 / 4288-36470 / 4288-39767 / 4288-39850 (payment summary), 4691-51403 (payment method sheet), 4604-32678 (insufficient warning).
 
 Fonts load from Google Fonts (Inter); without internet the page falls back to the system font.
