@@ -627,7 +627,12 @@ function stripInner(){
     // effective chat price = astrologer rate ÷ (wallet credit ÷ amount paid)
     const perMin = Math.round(ASTRO_RATE * ab.sel / (ab.sel + b)); // whole rupees
     const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
-    const tail = ab.mode==='offer' ? ` to chat with ${nm}` : flowAstro ? ` to chat with ${nm} <b>at&nbsp;₹${perMin}/min</b>` : ` to chat <b>at&nbsp;₹${perMin}/min</b>`;
+    /* ASTRO50 is a flat ₹50, so it is worth relatively less on a bigger recharge and the
+       effective rate climbs (₹13 -> ₹16 -> ₹18). Showing it there reads as a penalty for
+       recharging more, so the rate is omitted on the coupon and offer screens. */
+    const showRate = ab.mode!=='offer' && ab.mode!=='coupon';
+    const rate = ` <b>at&nbsp;₹${perMin}/min</b>`;
+    const tail = flowAstro ? ` to chat with ${nm}${showRate?rate:''}` : (showRate?` to chat${rate}`:'');
     return `<div class="strip gx"><span>You Get <b>₹${fmt(b)} Extra</b>${tail}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>Earn <b>₹${fmt(bonusFor(250))} Extra</b> On <b>₹250</b> Recharge</span></div>`;
@@ -757,7 +762,7 @@ function renderAB(){
       </div>
     </div>
     <div class="ab-body" id="abBody">
-      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>${ab.mode==='offer'?`<p class="bn-sub"><b>75% Off</b> · ₹5/Min For First 5 Mins</p>`:''}`}</div><span class="sweep"></span></div>`:''}
+      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>${ab.mode==='offer'?`<p class="bn-sub"><b>80% Off</b> · ₹5/Min For First 5 Mins</p>`:''}`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
         <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
       </div></div>
@@ -839,7 +844,7 @@ function renderLow(){
 function popup(kind){
   const title=kind==='coupon'?'Coupon code Applied !':'Offer: First 5 min at ₹5/min !';
   const body=kind==='coupon'?`You’ll get <b>₹50 extra</b> on your first wallet recharge`
-    :`<s>₹25/min</s> → <span class="semi">₹5/min</span><br><span class="g">75% Off • Save ₹100</span>`;
+    :`<s>₹25/min</s> → <span class="semi">₹5/min</span><br><span class="g">80% Off • Save ₹100</span>`;
   const colors=['#f472b6','#facc15','#a855f7','#fb923c','#34d399','#e879f9'];
   let bits='';
   if(!RM) for(let i=0;i<46;i++){
