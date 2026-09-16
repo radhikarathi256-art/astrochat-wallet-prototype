@@ -224,7 +224,7 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .strip-wrap .tip{width:15px;height:13px;margin-bottom:-2px}
 .strip{position:relative;width:100%;border-radius:12px;padding:9px 6px;text-align:center;font-weight:500;font-size:12px;line-height:16px;letter-spacing:.3px;color:var(--s600);overflow:hidden;
   background:linear-gradient(90deg,rgba(231,246,238,.3) 0%,rgba(216,249,228,.76) 25%,rgba(166,244,197,.85) 50%,rgba(217,249,228,.75) 75%,rgba(231,246,238,.3) 100%) center/100% 100% no-repeat}
-.strip::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%) 0 0/250% 100%;animation:shimmer 2.6s ease-in-out infinite}
+.strip::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 15%,rgba(255,255,255,.35) 50%,transparent 85%) 0 0/250% 100%;animation:shimmer 4.2s ease-in-out infinite}
 @keyframes shimmer{0%{background-position:150% 0}60%,100%{background-position:-60% 0}}
 .strip span{position:relative;z-index:1}
 .strip b{font-weight:800}
@@ -353,8 +353,8 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ps-info{gap:6px;padding:0;color:#475467;font-size:14px;line-height:20px}
 .ps-info img{width:16px;height:16px;flex-shrink:0}
 .ps-info .amt-get{font-weight:700}
-.ps-card.plain .ps-info .amt-get{color:#475467}
-.ps-card.extra .ps-info .amt-get{color:#475467}
+.ps-info .amt-get{color:#027A48}
+.ps-card.under .ps-info .amt-get{color:#475467}
 .ps-link{display:flex;align-items:center;font-size:12px;line-height:18px;font-weight:500;color:#667085;white-space:nowrap}
 .paybtn{padding:4px 12px!important}
 .paybtn b{display:block;font-size:16px;line-height:22px}
@@ -610,7 +610,9 @@ function renderHome(){
 }
 
 /* ---------- ADD BALANCE ---------- */
-const BASE=[[50,0],[100,10],[250,50],[500,150],[1000,400],[2000,400],[3000,600],[4000,800],[5000,1000],[10000,2000]];
+/* bonus % must never fall as the amount rises, otherwise a bigger recharge buys a worse
+   per-minute rate (perMin = ASTRO_RATE / (1 + bonus/amount)). 40% is the ceiling. */
+const BASE=[[50,0],[100,10],[250,50],[500,150],[1000,400],[2000,800],[3000,1200],[4000,1600],[5000,2000],[10000,4000]];
 const COUPON={50:50,100:60,250:100};
 let ab={mode:'default',sel:100,expanded:false,banner:false,shown:100,cd:0};
 const bonusFor=v=>(ab.mode==='coupon'&&COUPON[v]!=null)?COUPON[v]:(BASE.find(x=>x[0]===v)||[])[1];
@@ -676,11 +678,12 @@ function summaryHTML(gst){
   const total=sel+(bonusFor(sel)||0);
   const coupon=ab.mode==='coupon' ? total-sel-std : 0;
   const extra=total>sel;
+  const under=total<pay;
   const open=!!ab.payOpen;
   const dash=c=>`<span class="ps-dash" style="--dc:${c}"></span>`;
   const row=(l,r,cls='')=>`<div class="ps-line ${cls}"><span>${l}</span><span>${r}</span></div>`;
   return `<div class="ps-wrap">
-    <div class="ps-card ${open?'open':''} ${extra?'extra':'plain'}" role="button" tabindex="0" data-hot data-paytoggle aria-expanded="${open}">
+    <div class="ps-card ${open?'open':''} ${extra?'extra':'plain'} ${under?'under':''}" role="button" tabindex="0" data-hot data-paytoggle aria-expanded="${open}">
       <div class="ps-top">
         <p class="ps-info"><img src="${I['wallet-14']}" alt="" width="16" height="16"><span>You get <b class="amt-get">₹${fmt(total)}</b> in wallet</span></p>
         <span class="ps-link">Details <img class="chev ps-chev ${open?'up':''}" src="${I.chevron}" alt=""></span>
@@ -754,7 +757,7 @@ function renderAB(){
       </div>
     </div>
     <div class="ab-body" id="abBody">
-      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt"><p>${label} <b id="cd">${cdText()}</b></p>${ab.mode==='coupon'?`<p class="bn-sub"><b>ASTRO50</b> · ₹50 Extra Every Recharge</p>`:ab.mode==='offer'?`<p class="bn-sub"><b>75% Off</b> · ₹5/Min For First 5 Mins</p>`:''}</div><span class="sweep"></span></div>`:''}
+      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>${ab.mode==='offer'?`<p class="bn-sub"><b>75% Off</b> · ₹5/Min For First 5 Mins</p>`:''}`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
         <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
       </div></div>
