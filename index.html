@@ -270,14 +270,14 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .addfly.merge{opacity:0;transform:translateX(-30px) scale(.5);transition:opacity .55s ease-in,transform .7s cubic-bezier(.5,0,.8,.4)}
 .bonus.nudge{border:0;cursor:pointer;font-size:11px;letter-spacing:0;padding:4px 7px;background:linear-gradient(180deg,#F79009,#DC6803);box-shadow:0 2px 6px rgba(220,104,3,.35);animation:nudge 2.4s ease-in-out infinite}
 @keyframes nudge{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(-2px)}86%{transform:translateY(0)}92%{transform:translateY(-1px)}}
-.coinfall{position:absolute;inset:0;border-radius:13px;overflow:hidden;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(90deg,#000 0 17%,transparent 23% 77%,#000 83% 100%);mask-image:linear-gradient(90deg,#000 0 17%,transparent 23% 77%,#000 83% 100%)}
+.coinfall{position:absolute;inset:0;border-radius:13px;overflow:hidden;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(90deg,#000 0 21%,transparent 24% 76%,#000 79% 100%);mask-image:linear-gradient(90deg,#000 0 21%,transparent 24% 76%,#000 79% 100%)}
 .coinfall .coin{position:absolute;top:0;opacity:0;animation:coinFall 3.6s linear infinite}
-.coinfall .coin:nth-child(1){left:3%;width:11px;height:11px;animation-delay:0s}
-.coinfall .coin:nth-child(2){left:85%;width:11px;height:11px;animation-delay:.9s}
-.coinfall .coin:nth-child(3){left:7%;width:9px;height:9px;animation-delay:1.8s}
-.coinfall .coin:nth-child(4){left:89%;width:9px;height:9px;animation-delay:2.7s}
-.coinfall .coin:nth-child(5){left:2%;width:10px;height:10px;animation-delay:3.3s}
-@keyframes coinFall{0%{transform:translateY(-18px) rotate(0);opacity:0}12%{opacity:.95}80%{opacity:.95}100%{transform:translateY(82px) rotate(220deg);opacity:0}}
+.coinfall .coin:nth-child(1){left:2%;width:15px;height:15px;animation-delay:0s}
+.coinfall .coin:nth-child(2){left:81%;width:15px;height:15px;animation-delay:.9s}
+.coinfall .coin:nth-child(3){left:4%;width:13px;height:13px;animation-delay:1.8s}
+.coinfall .coin:nth-child(4){left:83%;width:13px;height:13px;animation-delay:2.7s}
+.coinfall .coin:nth-child(5){left:1%;width:14px;height:14px;animation-delay:3.3s}
+@keyframes coinFall{0%{transform:translateY(-22px) rotate(0);opacity:0}12%{opacity:.95}80%{opacity:.95}100%{transform:translateY(82px) rotate(220deg);opacity:0}}
 .tile .val{z-index:1}
 .tile .sel{z-index:2}
 .bonus{position:relative;z-index:3;margin-top:-15px;padding:4px 8px;border-radius:12px;color:#fff;font-weight:600;font-size:12px;line-height:18px;letter-spacing:-.12px;white-space:nowrap;background:linear-gradient(-0.556deg,#05603A 10.094%,#027A48 23.329%,#027A48 83.868%,rgba(2,122,72,0) 109.72%);}
@@ -354,9 +354,9 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ps-info img{width:16px;height:16px;flex-shrink:0}
 .ps-info .amt-get{font-weight:700}
 .ps-card.plain .ps-info .amt-get{color:#475467}
-.ps-card.extra .ps-info .amt-get{color:#027A48}
+.ps-card.extra .ps-info .amt-get{color:#475467}
 .ps-link{display:flex;align-items:center;font-size:12px;line-height:18px;font-weight:500;color:#667085;white-space:nowrap}
-.paybtn{padding:6px 12px!important}
+.paybtn{padding:4px 12px!important}
 .paybtn b{display:block;font-size:16px;line-height:22px}
 .paybtn small{display:block;font-size:12px;line-height:16px;opacity:1}
 
@@ -626,7 +626,7 @@ function stripInner(){
     const perMin = Math.round(ASTRO_RATE * ab.sel / (ab.sel + b)); // whole rupees
     const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
     const tail = ab.mode==='offer' ? ` to chat with ${nm}` : flowAstro ? ` to chat with ${nm} <b>at&nbsp;₹${perMin}/min</b>` : ` to chat <b>at&nbsp;₹${perMin}/min</b>`;
-    return `<div class="strip gx"><span>Get <b>₹${fmt(b)} Extra</b>${tail}</span></div>`;
+    return `<div class="strip gx"><span>You Get <b>₹${fmt(b)} Extra</b>${tail}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>Earn <b>₹${fmt(bonusFor(250))} Extra</b> On <b>₹250</b> Recharge</span></div>`;
   return '';
