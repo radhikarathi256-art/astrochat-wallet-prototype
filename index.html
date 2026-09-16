@@ -613,14 +613,16 @@ function renderHome(){
 /* bonus % must never fall as the amount rises, otherwise a bigger recharge buys a worse
    per-minute rate (perMin = ASTRO_RATE / (1 + bonus/amount)). 40% is the ceiling. */
 const BASE=[[50,0],[100,10],[250,50],[500,150],[1000,400],[2000,800],[3000,1200],[4000,1600],[5000,2000],[10000,4000]];
-/* ASTRO50 adds a flat ₹50 on top of whatever the wallet page already gives, at every
-   amount. Being flat, it is worth proportionally less as the recharge grows, so the
-   effective rate climbs ₹13 -> ₹16 -> ₹18 across the three tiles. */
-const COUPON_EXTRA=50;
+/* ASTRO50 is a percentage that RISES with the amount, so a bigger recharge always buys a
+   cheaper minute (₹13 -> ₹12 -> ₹11). A flat ₹50 did the opposite: it is 100% of a ₹50
+   recharge but only 40% of a ₹250 one, so the effective rate climbed ₹13 -> ₹16 -> ₹18.
+   Only the three coupon tiles are covered; larger amounts use the standing wallet bonus. */
+const COUPON_PCT={50:1,100:1.1,250:1.2};
 let ab={mode:'default',sel:100,expanded:false,banner:false,shown:100,cd:0};
 const bonusFor=v=>{
   const base=(BASE.find(x=>x[0]===v)||[])[1];
-  return (ab.mode==='coupon'&&base!=null)?base+COUPON_EXTRA:base;
+  if(ab.mode==='coupon'&&COUPON_PCT[v]!=null) return Math.round(v*COUPON_PCT[v]);
+  return base;
 };
 
 const ASTRO_RATE=25; // ₹/min, from the Figma offer popup (₹25/min) and the 4 min = ₹100 minimum
@@ -766,7 +768,7 @@ function renderAB(){
       </div>
     </div>
     <div class="ab-body" id="abBody">
-      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹${COUPON_EXTRA} extra · ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>${ab.mode==='offer'?`<p class="bn-sub"><b>80% Off</b> · ₹5/Min For First 5 Mins</p>`:''}`}</div><span class="sweep"></span></div>`:''}
+      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>${ab.mode==='offer'?`<p class="bn-sub"><b>80% Off</b> · ₹5/Min For First 5 Mins</p>`:''}`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
         <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
       </div></div>
