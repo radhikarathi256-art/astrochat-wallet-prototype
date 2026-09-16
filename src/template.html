@@ -768,7 +768,7 @@ function renderAB(){
       </div>
     </div>
     <div class="ab-body" id="abBody">
-      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins at <b>₹5/min</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
+      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
         <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
       </div></div>
