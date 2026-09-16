@@ -272,6 +272,8 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 @keyframes nudge{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(-2px)}86%{transform:translateY(0)}92%{transform:translateY(-1px)}}
 .coinfall{position:absolute;inset:0;border-radius:13px;overflow:hidden;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(90deg,#000 0 21%,transparent 24% 76%,#000 79% 100%);mask-image:linear-gradient(90deg,#000 0 21%,transparent 24% 76%,#000 79% 100%)}
 .coinfall .coin{position:absolute;top:0;opacity:0;animation:coinFall 3.6s linear infinite}
+.coinfall{opacity:1;transition:opacity .2s ease}
+.tile[aria-pressed="true"] .coinfall{opacity:0} /* selected tile: stop the coin shower */
 .coinfall .coin:nth-child(1){left:2%;width:15px;height:15px;animation-delay:0s}
 .coinfall .coin:nth-child(2){left:81%;width:15px;height:15px;animation-delay:.9s}
 .coinfall .coin:nth-child(3){left:4%;width:13px;height:13px;animation-delay:1.8s}
@@ -356,7 +358,7 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ps-info .amt-get{color:#027A48}
 .ps-card.under .ps-info .amt-get{color:#475467}
 .ps-link{display:flex;align-items:center;font-size:12px;line-height:18px;font-weight:500;color:#667085;white-space:nowrap}
-.paybtn{padding:4px 12px!important}
+.paybtn{padding:2px 12px!important}
 .paybtn b{display:block;font-size:16px;line-height:22px}
 .paybtn small{display:block;font-size:12px;line-height:16px;opacity:1}
 
@@ -753,7 +755,7 @@ function pmSheetHTML(gst){
     </div>
     <div class="pm-cta">
       <p class="pm-credit">Pay now &amp; <b class="g">get</b> <b class="gb">₹${fmt(total)} added</b> <span class="w">in your wallet</span></p>
-      <div class="pm-btnwrap"><button class="paybtn pm-pay"><b>Pay ₹${fmt(pay)}</b><small>Incl. ₹${fmt(gst)} GST</small></button></div>
+      <div class="pm-btnwrap"><button class="paybtn pm-pay"><b>Pay ₹${fmt(pay)}</b><small>(Incl. ₹${fmt(gst)} GST)</small></button></div>
     </div>
   </div>`;
 }
@@ -790,7 +792,7 @@ function renderAB(){
       ${summaryHTML(gst)}
       <div class="pay-cta">
         <div class="payw" role="button" tabindex="0" data-hot data-paymethod aria-haspopup="dialog"><span class="l">Pay with ${chev()}</span><span class="pp">${pmLogo(pmCurrent(),20)}${pmCurrent().n}</span></div>
-        <button class="paybtn"><b>Pay ₹${fmt(ab.sel+gst)}</b><small>Incl. ₹${fmt(gst)} GST</small></button>
+        <button class="paybtn"><b>Pay ₹${fmt(ab.sel+gst)}</b><small>(Incl. ₹${fmt(gst)} GST)</small></button>
       </div>
     </div>
   </div>`;
