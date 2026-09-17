@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto:wght@500&display=swap" rel="stylesheet">
+<!-- dotLottie player for the low-balance loader. Unlike everything else in this file it is not
+     inlined, so the loader needs a network connection; the static wallet image stays in the
+     markup as a fallback and is hidden only once the component actually upgrades. -->
+<script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js"></script>
 <style>
 :root{
   --brand:#EF6939;--brand-500:#F28761;
@@ -172,8 +176,13 @@ body.mobile .phone{border-radius:0;box-shadow:none}
    z-index 2, the banner is not) and slides up out of it. Applied only on the first render —
    rerenderAB() re-mounts the whole screen on every tile tap, so without the .bn-in gate the
    banner would replay this and appear to jump each time a SKU is selected. */
-.banner.bn-in{animation:riseFromCard .45s cubic-bezier(.2,.8,.2,1)}
-@keyframes riseFromCard{from{transform:translateY(100%)}to{transform:none}}
+/* gentle: a long, evenly-decelerating glide rather than the earlier fast-out snap, with the
+   last few px eased almost to a stop and a short opacity ramp so it surfaces instead of popping */
+.banner.bn-in{animation:riseFromCard .72s cubic-bezier(.33,.9,.35,1) both;will-change:transform,opacity}
+@keyframes riseFromCard{
+  from{transform:translateY(100%);opacity:.55}
+  55%{opacity:1}
+  to{transform:translateY(0);opacity:1}}
 
 /* insufficient balance warning (Figma 4604:32678): rises from behind the card when ₹50 is picked */
 .warn-wrap{display:grid;grid-template-rows:0fr;margin-bottom:0;transition:grid-template-rows .45s cubic-bezier(.2,.8,.2,1),margin-bottom .45s cubic-bezier(.2,.8,.2,1)}
@@ -439,10 +448,11 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 /* ---------- LOW WALLET ---------- */
 .low{background:#fff;display:flex;align-items:center;justify-content:center}
 .low-in{display:flex;flex-direction:column;align-items:center;gap:32px;animation:fade .3s ease-out}
-.low-art{width:124px;height:124px;border-radius:50%;overflow:hidden}
-.low-art img{width:100%;height:100%;object-fit:cover}
-.low-art.ph{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#fde8a8 0 38px,#fff4d0 39px 62px);animation:breathe 1.8s ease-in-out infinite}
-.low-art.ph img{width:44px;height:44px;object-fit:contain;filter:sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.05)}
+.low-art{position:relative;width:160px;height:160px;display:flex;align-items:center;justify-content:center}
+.low-art dotlottie-wc{width:100%;height:100%}
+/* the still wallet shows until the player upgrades, then gets out of the way */
+.low-art img{width:124px;height:124px;border-radius:50%;object-fit:cover}
+.low-art dotlottie-wc:defined ~ img{display:none}
 @keyframes breathe{50%{transform:scale(1.05)}}
 .low-in h2{font-weight:700;font-size:20px;line-height:30px;color:var(--g600);text-align:center}
 .low-in > div{display:flex;flex-direction:column;align-items:center}
@@ -644,6 +654,7 @@ const bonusFor=v=>{
 };
 
 const ASTRO_RATE=25; // ₹/min, from the Figma offer popup (₹25/min) and the 4 min = ₹100 minimum
+const LOTTIE_LOW='https://lottie.host/5ddeccf5-8552-43a2-9652-64ffc3b467ac/K2ZA3CwRuI.lottie';
 let flowAstro='Astro Hemali';
 let flowType='wallet'; // 'insufficient' when the user came from an astrologer's Chat button with too little balance // astrologer the user is trying to reach (null when opened from the wallet)
 function stripInner(){
@@ -865,7 +876,8 @@ function rerenderAB(){
 
 /* ---------- LOW / POPUP / CHAT ---------- */
 function renderLow(){
-  const art=P.lowWallet?`<div class="low-art"><img src="${P.lowWallet}" alt=""></div>`:`<div class="low-art ph"><img src="${I.wallet}" alt=""></div>`;
+  const fallback=P.lowWallet?`<img src="${P.lowWallet}" alt="">`:`<img src="${I.wallet}" alt="">`;
+  const art=`<div class="low-art"><dotlottie-wc src="${LOTTIE_LOW}" autoplay loop></dotlottie-wc>${fallback}</div>`;
   return `<div class="screen low"><div class="low-in">${art}<div><h2>Your wallet balance is low !</h2><p>Recharge wallet to keep chatting with astrologers</p></div></div></div>`;
 }
 function popup(kind){
