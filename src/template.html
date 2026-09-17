@@ -526,6 +526,7 @@ body.mobile .phone{border-radius:0;box-shadow:none}
     <button data-jump="listingChat">Listing → Chat</button>
     <button data-jump="again">Chat again (coupon)</button>
     <button data-jump="history">View history (offer)</button>
+    <button data-jump="post3">Post 3rd recharge</button>
   </div>
   <div class="stage" id="stage"><div class="phone" id="phone"></div></div>
 </div>
@@ -538,6 +539,7 @@ body.mobile .phone{border-radius:0;box-shadow:none}
     <button data-jump="listingChat">Listing → Chat<small>Low balance → Add Money to Wallet</small></button>
     <button data-jump="again">Chat again<small>Coupon applied → coupon bonuses</small></button>
     <button data-jump="history">View history<small>Continue chat → ₹5/min offer</small></button>
+    <button data-jump="post3">Post 3rd recharge<small>Two rows of SKUs, coins on ₹500</small></button>
   </div>
 </div>
 
@@ -697,7 +699,7 @@ function tileHTML(list){
   return list.map(([v])=>{
     // the badge includes the coupon, so under ASTRO50 a ₹50 tile shows +₹50 and ₹100 shows +₹60
     const b=bonusFor(v), on=v===ab.sel;
-    const coins=(v===250)?`<span class="coinfall" aria-hidden="true"><i class="coin"></i><i class="coin"></i><i class="coin"></i><i class="coin"></i><i class="coin"></i></span>`:'';
+    const coins=(v===(ab.coin||250))?`<span class="coinfall" aria-hidden="true"><i class="coin"></i><i class="coin"></i><i class="coin"></i><i class="coin"></i><i class="coin"></i></span>`:'';
     return `<div class="tile-col">
       <button class="tile ${ab.justSel===v?'justpick':''}" data-hot data-tile="${v}" aria-pressed="${on}" aria-label="Recharge ₹${fmt(v)}${b?`, ₹${fmt(b)} bonus`:''}">
         <span class="val"><i>₹</i><span>${fmt(v)}</span></span>
@@ -708,9 +710,10 @@ function tileHTML(list){
   }).join('');
 }
 function tilesHTML(){
-  return `<div class="tiles">${tileHTML(BASE.slice(0,3))}</div>
+  const n = ab.rows===2 ? 6 : 3;   // post-3rd-recharge shows a second row up front
+  return `<div class="tiles">${tileHTML(BASE.slice(0,n))}</div>
     <div class="more-wrap ${ab.expanded?'open':''}" id="moreWrap" aria-hidden="${!ab.expanded}">
-      <div class="more-inner"><div class="tiles more">${tileHTML(BASE.slice(3))}</div></div>
+      <div class="more-inner"><div class="tiles more">${tileHTML(BASE.slice(n))}</div></div>
     </div>`;
 }
 function burstHTML(){
@@ -985,7 +988,7 @@ function mount(html, anim){
   }
   alignRupee(); syncWarn();
 }
-function openAB(mode,sel,banner=false,auto=true){ab={mode,sel,expanded:false,banner,shown:sel,cd:0};mount(renderAB(), phone.querySelector('.screen.ab')?null:'in-right');if(auto)later(heroTo,450)}
+function openAB(mode,sel,banner=false,auto=true,extra){ab={mode,sel,expanded:false,banner,shown:sel,cd:0,...extra};mount(renderAB(), phone.querySelector('.screen.ab')?null:'in-right');if(auto)later(heroTo,450)}
 function withPopup(kind,mode,onDone){
   openAB(mode,50,false,false);
   phone.insertAdjacentHTML('beforeend',popup(kind));
@@ -1000,6 +1003,7 @@ function go(route){
     case 'listingChat': flowType='insufficient'; flowAstro='Astro Hemali'; mount(renderLow()); later(()=>openAB('default',100),1600); break;
     case 'again': flowType='coupon'; flowAstro='Astro Vipasana'; mount(renderLow()); later(()=>withPopup('coupon','coupon',()=>later(()=>{ab.banner=true;startCountdown(5*3600);rerenderAB()},800)),1600); break;
     case 'history': mount(renderChat()); break;
+    case 'post3': flowType='wallet'; flowAstro='Astro Hemali'; openAB('default',100,false,true,{rows:2,coin:500}); break;
     case 'continue': flowType='offer'; flowAstro='Astro Vipasana'; mount(renderLow()); later(()=>withPopup('offer','offer',()=>{ab.banner=true;startCountdown(5*60);rerenderAB()}),1600); break;
   }
 }
