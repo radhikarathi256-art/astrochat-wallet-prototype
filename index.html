@@ -395,9 +395,6 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ps-card.under .ps-info .amt-get{color:#475467}
 /* same 12px as the "Pay with" label; the wallet line truncates when it runs out of room */
 .ps-link{display:flex;align-items:center;flex:none;font-size:12px;line-height:18px;font-weight:500;color:#667085;white-space:nowrap}
-.paybtn{padding:2px 12px!important}
-.paybtn b{display:block;font-size:16px;line-height:22px}
-.paybtn small{display:block;font-size:12px;line-height:16px;opacity:1}
 
 .pay{border:1px solid #D0D5DD;border-bottom:0}
 .ps-wrap{padding:12px 16px;background:#fff}
@@ -456,7 +453,7 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .paybtn{width:200px;border:1px solid #EF6939;border-radius:12px;background:var(--brand);padding:10px 18px;text-align:center;color:#fff;white-space:nowrap;box-shadow:0 1px 2px rgba(16,24,40,.05);transition:transform .1s}
 .paybtn:active{transform:scale(.98)}
 .paybtn b{font-weight:600;font-size:16px;line-height:24px}
-.paybtn small{font-size:12px;line-height:18px}
+.paybtn small{font-size:12px;line-height:18px;margin-left:4px}
 
 /* ---------- LOW WALLET ---------- */
 .low{background:#fff;display:flex;align-items:center;justify-content:center}
@@ -800,7 +797,7 @@ function pmSheetHTML(gst){
     </div>
     <div class="pm-cta">
       <p class="pm-credit ${total<pay?'under':''}">Pay now &amp; get <b class="gb">₹${fmt(total)}</b> added in your wallet</p>
-      <div class="pm-btnwrap"><button class="paybtn pm-pay"><b>Pay ₹${fmt(pay)}</b><small>(Incl. ₹${fmt(gst)} GST)</small></button></div>
+      <div class="pm-btnwrap"><button class="paybtn pm-pay"><b>Pay ₹${fmt(pay)}</b><small>(GST incl.)</small></button></div>
     </div>
   </div>`;
 }
@@ -838,7 +835,7 @@ function renderAB(){
       ${summaryHTML(gst)}
       <div class="pay-cta">
         <div class="payw" role="button" tabindex="0" data-hot data-paymethod aria-haspopup="dialog"><span class="l">Pay with ${chev()}</span><span class="pp">${pmLogo(pmCurrent(),20)}${pmCurrent().n}</span></div>
-        <button class="paybtn"><b>Pay ₹${fmt(ab.sel+gst)}</b><small>(Incl. ₹${fmt(gst)} GST)</small></button>
+        <button class="paybtn"><b>Pay ₹${fmt(ab.sel+gst)}</b><small>(GST incl.)</small></button>
       </div>
     </div>
   </div>`;
