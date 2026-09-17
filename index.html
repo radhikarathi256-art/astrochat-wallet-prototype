@@ -245,8 +245,13 @@ body.mobile .phone{border-radius:0;box-shadow:none}
   /* centre of the strip sits on the notch centre (138px), whatever the strip height; 5.5px = half the pointer above it */
   left:50%;top:138px;transform:translate(-50%,calc(-50% - 5.5px))}
 .strip-wrap .tip{width:15px;height:13px;margin-bottom:-2px}
+/* The gradient is drawn 170% of the pill's width and slowly panned back and forth, so the bright
+   core drifts across instead of sitting still. Every variant has to restate background-size:
+   each one re-declares the `background` shorthand, which resets size back to auto. */
 .strip{position:relative;width:100%;border-radius:12px;padding:9px 6px;text-align:center;font-weight:500;font-size:12px;line-height:16px;letter-spacing:.3px;color:var(--s600);overflow:hidden;
-  background:linear-gradient(90deg,rgba(231,246,238,.3) 0%,rgba(216,249,228,.76) 25%,rgba(166,244,197,.85) 50%,rgba(217,249,228,.75) 75%,rgba(231,246,238,.3) 100%) center/100% 100% no-repeat}
+  background:linear-gradient(90deg,rgba(231,246,238,.3) 0%,rgba(216,249,228,.76) 25%,rgba(166,244,197,.85) 50%,rgba(217,249,228,.75) 75%,rgba(231,246,238,.3) 100%) center/170% 100% no-repeat;
+  animation:drift 7s ease-in-out infinite alternate}
+@keyframes drift{from{background-position:0% 0}to{background-position:100% 0}}
 .strip::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 15%,rgba(255,255,255,.35) 50%,transparent 85%) 0 0/250% 100%;animation:shimmer 4.2s ease-in-out infinite}
 @keyframes shimmer{0%{background-position:150% 0}60%,100%{background-position:-60% 0}}
 .strip span{position:relative;z-index:1}
@@ -255,14 +260,15 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 
 /* green bonus strip (Figma 4573:1698) */
 .strip.gx{width:256px;padding:9px 5px;border-radius:12px;color:#027A48;font-size:12px;line-height:17px;font-weight:500;letter-spacing:.36px;text-align:center;white-space:normal;
-  background:linear-gradient(90deg,rgba(231,246,238,.3) 15.865%,rgba(216,249,228,.763) 38.462%,rgba(166,244,197,.6) 50%,rgba(217,249,228,.75) 62.981%,rgba(231,246,238,.3) 86.377%)}
+  background:linear-gradient(90deg,rgba(231,246,238,.3) 15.865%,rgba(216,249,228,.763) 38.462%,rgba(166,244,197,.6) 50%,rgba(217,249,228,.75) 62.981%,rgba(231,246,238,.3) 86.377%) center/170% 100% no-repeat}
 .strip.gx b{font-weight:800;font-size:14px;letter-spacing:.42px;color:#027A48}
 /* ₹50 no-bonus strip (Figma 4683:1287): amber band, hugs its text */
 .strip.nb50{width:auto;padding:9px 5px;border-radius:12px;color:#93370D;font-size:12px;line-height:16px;font-weight:500;letter-spacing:.36px;white-space:nowrap;
-  background:linear-gradient(90deg,rgba(254,240,199,.3) 15.865%,rgba(254,240,199,.763) 38.462%,#FEF0C7 50%,rgba(254,240,199,.75) 62.981%,rgba(254,240,199,.3) 86.377%)}
+  background:linear-gradient(90deg,rgba(254,240,199,.3) 15.865%,rgba(254,240,199,.763) 38.462%,#FEF0C7 50%,rgba(254,240,199,.75) 62.981%,rgba(254,240,199,.3) 86.377%) center/170% 100% no-repeat}
 .strip.nb50 b{font-weight:800;font-size:14px;letter-spacing:.42px}
 .strip.big{font-size:14px;line-height:20px;letter-spacing:.2px}
-.strip.pulse{animation:pop .45s ease-out}
+/* the pop has to re-list drift, or selecting a tile would replace it and freeze the gradient */
+.strip.pulse{animation:pop .45s ease-out,drift 7s ease-in-out infinite alternate}
 @keyframes pop{0%{transform:scale(.94)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);column-gap:14px;row-gap:20px;padding:9px 16px 0}
 .tile-col{display:flex;flex-direction:column;align-items:center}
