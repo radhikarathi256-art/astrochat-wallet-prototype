@@ -684,7 +684,7 @@ function stripInner(){
     const tail = flowAstro ? ` to chat with ${nm}${showRate?rate:''}` : (showRate?` to chat${rate}`:'');
     return `<div class="strip gx"><span>You Get <b>₹${fmt(b)} Extra</b>${tail}</span></div>`;
   }
-  if(b===0) return `<div class="strip nb50"><span><b>92%</b> pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
+  if(b===0) return `<div class="strip nb50"><span>92% users pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
   return '';
 }
 function cdText(){
