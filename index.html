@@ -362,18 +362,23 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .pm-row:active .pm-radio{background:rgba(239,105,57,.08)}
 .pm-div{display:block;height:1px;background:repeating-linear-gradient(90deg,#EAECF0 0 2px,transparent 2px 4px)}
 .pm-more{display:flex;align-items:center;gap:8px;padding:0 4px}
-.pm-grad{flex:1;height:1px}
-.pm-grad.l{background:linear-gradient(90deg,rgba(208,213,221,0),#D0D5DD)}
-.pm-grad.r{background:linear-gradient(90deg,#D0D5DD,rgba(208,213,221,0))}
-.pm-chip{display:flex;align-items:center;height:26px;padding:0 4px 0 12px;border:.4px solid #D0D5DD;border-radius:12px;font-size:12px;line-height:18px;color:#667085;white-space:nowrap}
+/* dotted like .pm-div, with the fade moved to a mask so the dots stay crisp instead of
+   dissolving into a smear. Chip border matches See More Options on the wallet page. */
+.pm-grad{flex:1;height:1px;background:repeating-linear-gradient(90deg,#D0D5DD 0 2px,transparent 2px 4px)}
+.pm-grad.l{-webkit-mask-image:linear-gradient(90deg,transparent,#000);mask-image:linear-gradient(90deg,transparent,#000)}
+.pm-grad.r{-webkit-mask-image:linear-gradient(90deg,#000,transparent);mask-image:linear-gradient(90deg,#000,transparent)}
+.pm-chip{display:flex;align-items:center;height:26px;padding:0 4px 0 12px;border:1px dashed var(--g300);border-radius:12px;font-size:12px;line-height:18px;color:var(--g500);white-space:nowrap}
 .pm-chip img{width:22px;height:22px}
 .pm-cta{position:absolute;left:0;right:0;bottom:0;z-index:3;background:#fff;border:1px solid #D0D5DD;border-bottom:0;border-radius:12px 12px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.2);
   transform:translateY(110%);transition:transform .38s cubic-bezier(.2,.9,.3,1) .04s}
 .pm-overlay.open .pm-cta{transform:none}
-.pm-credit{border:2px solid #fff;border-radius:12px 12px 0 0;padding:12px 12px 8px;text-align:center;font-size:14px;line-height:20px;color:#344054}
-.pm-credit .g{font-weight:600;color:#027A48}
+/* same rule as the wallet summary row: only the amount is bold, the sentence around it stays
+   grey, and the amount only turns green when the wallet credit beats what is actually paid
+   (see `under` in summaryHTML). Previously "get" and "added" were green and the amount was
+   green unconditionally, so ₹110 read as a win next to a ₹118 charge. */
+.pm-credit{border:2px solid #fff;border-radius:12px 12px 0 0;padding:12px 12px 8px;text-align:center;font-size:14px;line-height:20px;color:#475467}
 .pm-credit .gb{font-weight:700;color:#027A48}
-.pm-credit .w{color:#475467}
+.pm-credit.under .gb{color:#475467}
 .pm-btnwrap{padding:8px 16px 24px}
 .pm-btnwrap .paybtn.pm-pay{width:100%;display:block}
 .pp .pm-logo-raw{width:20px;height:20px;border-radius:4px}
@@ -791,7 +796,7 @@ function pmSheetHTML(gst){
       </div>
     </div>
     <div class="pm-cta">
-      <p class="pm-credit">Pay now &amp; <b class="g">get</b> <b class="gb">₹${fmt(total)} added</b> <span class="w">in your wallet</span></p>
+      <p class="pm-credit ${total<pay?'under':''}">Pay now &amp; get <b class="gb">₹${fmt(total)}</b> added in your wallet</p>
       <div class="pm-btnwrap"><button class="paybtn pm-pay"><b>Pay ₹${fmt(pay)}</b><small>(Incl. ₹${fmt(gst)} GST)</small></button></div>
     </div>
   </div>`;
