@@ -596,7 +596,7 @@ function card(price){
     </div>
     <div class="card-btns">
       <button><img src="${I.call}" alt="" width="20" height="20">Call</button>
-      <button data-hot data-go="listingChat"><img src="${I['chat-card']}" alt="" width="20" height="20">Chat</button>
+      <button data-hot data-go="listingChat" data-rate="${parseInt(price.replace(/\D/g,''),10)}"><img src="${I['chat-card']}" alt="" width="20" height="20">Chat</button>
     </div>
   </div>`;
 }
@@ -631,7 +631,7 @@ function renderHome(){
           <div class="rc" style="width:286px">
             <span class="avwrap">${photo('vippsana',56,'AV')}<span class="odot" style="right:0;top:0;width:14px;height:14px;border-radius:5px;background:var(--s700);border-width:1.7px"></span></span>
             <div style="flex:1;min-width:0"><p class="rc-name">Astro Vippsana</p><div class="price"><s>₹20/min</s><b>₹5/min</b></div>
-              <div class="rc-btns"><button class="btn-o" data-hot data-go="history">View History</button><button class="btn-f" data-hot data-go="again"><img src="${I.bubble}" alt="" width="18" height="18">Chat Again</button></div>
+              <div class="rc-btns"><button class="btn-o" data-hot data-go="history">View History</button><button class="btn-f" data-hot data-go="again" data-rate="5"><img src="${I.bubble}" alt="" width="18" height="18">Chat Again</button></div>
             </div>
           </div>
           <div class="rc" style="width:312px">
@@ -653,7 +653,7 @@ function renderHome(){
 
 /* ---------- ADD BALANCE ---------- */
 /* bonus % must never fall as the amount rises, otherwise a bigger recharge buys a worse
-   per-minute rate (perMin = ASTRO_RATE / (1 + bonus/amount)). 40% is the ceiling. */
+   per-minute rate (effective rate = rate / (1 + bonus/amount)). 40% is the ceiling. */
 const BASE=[[50,0],[100,10],[250,50],[500,150],[1000,400],[2000,800],[3000,1200],[4000,1600],[5000,2000],[10000,4000]];
 /* ASTRO50 is a flat ₹50 on top of the standing wallet bonus: ₹100 gives ₹10 + ₹50 = ₹60. */
 const COUPON_FLAT=50;
@@ -665,7 +665,10 @@ const bonusFor=v=>{
   return ab.mode==='coupon' ? base+COUPON_FLAT : base;
 };
 
-const ASTRO_RATE=25; // ₹/min, from the Figma offer popup (₹25/min) and the 4 min = ₹100 minimum
+// The astrologer's ₹/min, read off the card the user tapped — the price they will actually be
+// charged, so the discounted figure when a card strikes one out. null on the wallet chip, where
+// no astrologer is known: nothing that needs a rate may be shown there.
+let flowRate=null;
 const LOTTIE_LOW='https://lottie.host/5ddeccf5-8552-43a2-9652-64ffc3b467ac/K2ZA3CwRuI.lottie';
 let flowAstro='Astro Hemali';
 let flowType='wallet'; // 'insufficient' when the user came from an astrologer's Chat button with too little balance // astrologer the user is trying to reach (null when opened from the wallet)
@@ -681,7 +684,8 @@ function stripInner(){
   if(b>0){ // Figma 4573:1698
     const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
     const tail = flowAstro ? ` with&nbsp;${nm}` : ''; // dropped on the wallet entry, where no astrologer is known
-    return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra + session <b>${cheaperPct(b,ab.sel)}%</b>&nbsp;cheaper${tail}</span></div>`;
+    const noun = flowAstro ? 'session' : 'sessions'; // plural on the wallet chip: no one session in view
+    return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra + ${noun} <b>${cheaperPct(b,ab.sel)}%</b>&nbsp;cheaper${tail}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>92% users pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
   return '';
@@ -815,7 +819,7 @@ function renderAB(){
     <div class="ab-body" id="abBody">
       ${ab.banner?`<div class="banner${bnIn?' bn-in':''}"><img class="bn-stars" src="${I.stars}" alt="" aria-hidden="true"><img class="bn-icon" src="${I.discount}" alt="" width="28" height="28"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
-        <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
+        <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${fmt(4*(flowRate||0))})</b></p></div>
       </div></div>
       <div class="receipt">
         <div class="hero">
@@ -927,7 +931,7 @@ function renderChat(){
       <div class="sheet-top"><img src="${I.sparkle}" alt=""><span>Next Free 2 Mins Chat In</span><span>14h : 23 m</span></div>
       <div class="sheet-card">
         <div class="sheet-row">${photo('chat',60,'AV')}<p>Hi mansi, continue this chat at discounted price of <b>₹5/min</b></p></div>
-        <button data-hot data-go="continue">Continue Chat</button>
+        <button data-hot data-go="continue" data-rate="5">Continue Chat</button>
       </div>
     </div>
   </div>`;
@@ -959,7 +963,8 @@ function alignRupee(){
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(alignRupee);
 function syncWarn(){
   const w=document.getElementById('warnWrap'); if(!w||!ab) return;
-  const want = flowType==='insufficient' && ab.sel < ASTRO_RATE*4;
+  // any amount below 4 x the card rate, not a hardcoded ₹50 — the threshold moves with the rate
+  const want = flowType==='insufficient' && !!flowRate && ab.sel < 4*flowRate;
   if(want===!!ab.warnShown) return;
   ab.warnShown=want;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ w.classList.toggle('open',want); w.setAttribute('aria-hidden',!want); }));
@@ -991,17 +996,18 @@ function withPopup(kind,mode,onDone){
   phone.insertAdjacentHTML('beforeend',popup(kind));
   later(()=>{const o=phone.querySelector('.overlay');if(o){o.style.transition='opacity .25s';o.style.opacity='0';later(()=>{o.remove();onDone();heroTo()},250)}},2300);
 }
-function go(route){
+function go(route,rate){
   clearTimers();
+  flowRate = rate ? +rate : null; // whatever the tapped card charges; null when none was tapped
   document.getElementById('flowsSheet').classList.remove('open');
   switch(route){
     case 'home': mount(renderHome(), phone.querySelector('.screen.ab')?'out-right':null); break;
     case 'wallet': flowType='wallet'; flowAstro=''; openAB('default',100); break;
-    case 'listingChat': flowType='insufficient'; flowAstro='Astro Hemali'; mount(renderLow()); later(()=>openAB('default',100),1600); break;
-    case 'again': flowType='coupon'; flowAstro='Astro Vipasana'; mount(renderLow()); later(()=>withPopup('coupon','coupon',()=>later(()=>{ab.banner=true;startCountdown(5*3600);rerenderAB()},800)),1600); break;
+    case 'listingChat': flowType='insufficient'; flowAstro='Astro Hemali'; flowRate=flowRate||15; mount(renderLow()); later(()=>openAB('default',100),1600); break;
+    case 'again': flowType='coupon'; flowAstro='Astro Vipasana'; flowRate=flowRate||5; mount(renderLow()); later(()=>withPopup('coupon','coupon',()=>later(()=>{ab.banner=true;startCountdown(5*3600);rerenderAB()},800)),1600); break;
     case 'history': mount(renderChat()); break;
     case 'post3': flowType='wallet'; flowAstro=''; openAB('default',100,false,true,{rows:2,coin:500}); break;
-    case 'continue': flowType='offer'; flowAstro='Astro Vipasana'; mount(renderLow()); later(()=>withPopup('offer','offer',()=>{ab.banner=true;startCountdown(5*60);rerenderAB()}),1600); break;
+    case 'continue': flowType='offer'; flowAstro='Astro Vipasana'; flowRate=flowRate||5; mount(renderLow()); later(()=>withPopup('offer','offer',()=>{ab.banner=true;startCountdown(5*60);rerenderAB()}),1600); break;
   }
 }
 phone.addEventListener('click',e=>{
@@ -1012,7 +1018,7 @@ phone.addEventListener('click',e=>{
   }
   const t=e.target.closest('[data-go],[data-tile],[data-toggle],[data-paytoggle],[data-paymethod],[data-pmclose],[data-pmpick]');
   if(!t){phone.classList.add('hot-reveal');setTimeout(()=>phone.classList.remove('hot-reveal'),450);return}
-  if(t.dataset.go) return go(t.dataset.go);
+  if(t.dataset.go) return go(t.dataset.go,t.dataset.rate);
   if(t.dataset.tile){
     const v=+t.dataset.tile; if(v===ab.sel) return;
     const from=ab.cur??ab.shown; ab.sel=v; ab.shown=from; ab.cur=from; ab.fly=''; ab.justSel=v; rerenderAB(); ab.justSel=null; heroTo();
