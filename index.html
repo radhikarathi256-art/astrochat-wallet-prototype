@@ -669,19 +669,22 @@ const ASTRO_RATE=25; // ₹/min, from the Figma offer popup (₹25/min) and the 
 const LOTTIE_LOW='https://lottie.host/5ddeccf5-8552-43a2-9652-64ffc3b467ac/K2ZA3CwRuI.lottie';
 let flowAstro='Astro Hemali';
 let flowType='wallet'; // 'insufficient' when the user came from an astrologer's Chat button with too little balance // astrologer the user is trying to reach (null when opened from the wallet)
+// bonus ÷ amount = how many MORE minutes the bonus buys. Deliberately not bonus ÷ (amount+bonus),
+// which is how much CHEAPER each minute gets (₹250: 20% more minutes, but only 17% cheaper).
+// The astrologer's rate cancels out of bonus ÷ amount, so this line needs no rate to be true.
+function moreMinutes(bonus,amount){
+  const p=bonus/amount;
+  if(p===1) return 'double&nbsp;the&nbsp;minutes';
+  if(p>1) return `${+(p.toFixed(1))}×&nbsp;the&nbsp;minutes`;
+  return `${Math.round(p*100)}%&nbsp;more&nbsp;minutes`;
+}
 function stripInner(){
   const b=bonusFor(ab.sel);
   if(ab.mode==='coupon'&&!ab.banner) return '';
   if(b>0){ // Figma 4573:1698
-    // The per-minute rate is its own calculation, independent of the extra. It always uses the
-    // standing wallet bonus, so the coupon's flat ₹50 cannot push the rate back up: a flat ₹50
-    // is 100% of a ₹50 recharge but 0.5% of ₹10,000, and a falling bonus % means a rising rate.
-    const perMin = Math.round(ASTRO_RATE * ab.sel / (ab.sel + baseBonusFor(ab.sel))); // whole rupees
     const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
-    const showRate = ab.mode!=='offer';
-    const rate = ` <b>at&nbsp;₹${perMin}/min</b>`;
-    const tail = flowAstro ? ` to chat with ${nm}${showRate?rate:''}` : (showRate?` to chat${rate}`:'');
-    return `<div class="strip gx"><span>You Get <b>₹${fmt(b)} Extra</b>${tail}</span></div>`;
+    const tail = flowAstro ? ` with&nbsp;${nm}` : ''; // dropped on the wallet entry, where no astrologer is known
+    return `<div class="strip gx"><span>You get <b>₹${fmt(b)} extra</b> + <b>${moreMinutes(b,ab.sel)}</b>${tail}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>92% users pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
   return '';
@@ -996,11 +999,11 @@ function go(route){
   document.getElementById('flowsSheet').classList.remove('open');
   switch(route){
     case 'home': mount(renderHome(), phone.querySelector('.screen.ab')?'out-right':null); break;
-    case 'wallet': flowType='wallet'; flowAstro='Astro Hemali'; openAB('default',100); break;
+    case 'wallet': flowType='wallet'; flowAstro=''; openAB('default',100); break;
     case 'listingChat': flowType='insufficient'; flowAstro='Astro Hemali'; mount(renderLow()); later(()=>openAB('default',100),1600); break;
     case 'again': flowType='coupon'; flowAstro='Astro Vipasana'; mount(renderLow()); later(()=>withPopup('coupon','coupon',()=>later(()=>{ab.banner=true;startCountdown(5*3600);rerenderAB()},800)),1600); break;
     case 'history': mount(renderChat()); break;
-    case 'post3': flowType='wallet'; flowAstro='Astro Hemali'; openAB('default',100,false,true,{rows:2,coin:500}); break;
+    case 'post3': flowType='wallet'; flowAstro=''; openAB('default',100,false,true,{rows:2,coin:500}); break;
     case 'continue': flowType='offer'; flowAstro='Astro Vipasana'; mount(renderLow()); later(()=>withPopup('offer','offer',()=>{ab.banner=true;startCountdown(5*60);rerenderAB()}),1600); break;
   }
 }
