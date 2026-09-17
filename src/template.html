@@ -669,23 +669,19 @@ const ASTRO_RATE=25; // ₹/min, from the Figma offer popup (₹25/min) and the 
 const LOTTIE_LOW='https://lottie.host/5ddeccf5-8552-43a2-9652-64ffc3b467ac/K2ZA3CwRuI.lottie';
 let flowAstro='Astro Hemali';
 let flowType='wallet'; // 'insufficient' when the user came from an astrologer's Chat button with too little balance // astrologer the user is trying to reach (null when opened from the wallet)
-// bonus ÷ amount = how many MORE minutes the bonus buys. Deliberately not bonus ÷ (amount+bonus),
-// which is how much CHEAPER each minute gets (₹250: 20% more minutes, but only 17% cheaper).
-// The astrologer's rate cancels out of bonus ÷ amount, so this line needs no rate to be true.
-// Only the quantity is bold; the words that qualify it stay regular weight.
-function moreMinutes(bonus,amount){
-  const p=bonus/amount;
-  if(p===1) return '<b>double</b>&nbsp;the&nbsp;minutes';
-  if(p>1) return `<b>${+(p.toFixed(1))}×</b>&nbsp;the&nbsp;minutes`;
-  return `<b>${Math.round(p*100)}%</b>&nbsp;more&nbsp;minutes`;
-}
+// How much CHEAPER each minute gets = (rate − effective rate) ÷ rate. Expanding that,
+// rate = A, credit = amount + bonus, minutes = credit/A, effective = amount/minutes = amount*A/credit,
+// so (A − amount*A/credit) / A = bonus / credit — the rate cancels out. That is why the line is
+// true on the wallet entry, where no astrologer and therefore no rate is known.
+// ₹250: 50/300 = 17%, matching (25 − 20.83)/25.
+function cheaperPct(bonus,amount){ return Math.round(100*bonus/(amount+bonus)) }
 function stripInner(){
   const b=bonusFor(ab.sel);
   if(ab.mode==='coupon'&&!ab.banner) return '';
   if(b>0){ // Figma 4573:1698
     const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
     const tail = flowAstro ? ` with&nbsp;${nm}` : ''; // dropped on the wallet entry, where no astrologer is known
-    return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra + ${moreMinutes(b,ab.sel)}${tail}</span></div>`;
+    return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra + session <b>${cheaperPct(b,ab.sel)}%</b>&nbsp;cheaper${tail}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>92% users pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
   return '';
