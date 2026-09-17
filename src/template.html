@@ -156,14 +156,16 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .banner{position:relative;background:#027A48;border-radius:16px;overflow:hidden;margin-bottom:-20px;display:flex;gap:8px;align-items:center;padding:8px 16px 28px;color:#fff;font-size:12px;line-height:17px;font-weight:500;letter-spacing:.36px;animation:drop .4s ease-out}
 .banner b{font-weight:800;font-size:14px;letter-spacing:.42px;color:#fff;font-variant-numeric:tabular-nums}
 .banner .bn-txt{position:relative;z-index:1;flex:1;min-width:0}
-/* decorative sparkle field tucked into the top-right corner, faded out towards the text */
-.banner .bn-stars{position:absolute;top:0;right:0;width:236px;height:44px;object-fit:cover;object-position:right top;pointer-events:none;z-index:0;
-  -webkit-mask-image:linear-gradient(to left,#000 35%,transparent 100%);mask-image:linear-gradient(to left,#000 35%,transparent 100%)}
+/* decorative sparkle field tucked into the top-right corner, faded out towards the text.
+   White at .2 so the brightest star lands ~14% over the band and reads as twinkle, not dots. */
+.banner .bn-stars{position:absolute;top:0;right:0;width:236px;height:44px;object-fit:cover;object-position:right top;pointer-events:none;z-index:0;opacity:.2;
+  -webkit-mask-image:linear-gradient(to left,#000 8%,rgba(0,0,0,.45) 42%,transparent 78%);mask-image:linear-gradient(to left,#000 8%,rgba(0,0,0,.45) 42%,transparent 78%)}
 .banner .bn-sub{font-size:12px;line-height:17px;font-weight:500;color:#fff;margin-top:2px}
 .banner .bn-sub b{font-weight:800;font-size:14px;letter-spacing:.42px;color:#fff}
 .banner .bn-sub s{opacity:.75}
-.banner .bell{animation:ring 2.4s ease-in-out infinite;transform-origin:50% 20%}
-@keyframes ring{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(14deg)}80%{transform:rotate(-12deg)}85%{transform:rotate(8deg)}90%{transform:rotate(-5deg)}}
+.banner .bn-icon{position:relative;z-index:1;flex:none;width:28px;height:28px;transform-origin:50% 50%;animation:seal 3.2s ease-in-out infinite}
+/* discount seal: rests, then gives one wobble-pop so it reads as a stamp, not an alert */
+@keyframes seal{0%,72%,100%{transform:scale(1) rotate(0)}79%{transform:scale(1.14) rotate(-9deg)}87%{transform:scale(1.14) rotate(9deg)}94%{transform:scale(1.05) rotate(0)}}
 @keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
 
 /* insufficient balance warning (Figma 4604:32678): rises from behind the card when ₹50 is picked */
@@ -360,7 +362,7 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ps-info .amt-get{font-weight:700}
 .ps-info .amt-get{color:#027A48}
 .ps-card.under .ps-info .amt-get{color:#475467}
-.ps-link{display:flex;align-items:center;font-size:12px;line-height:18px;font-weight:500;color:#667085;white-space:nowrap}
+.ps-link{display:flex;align-items:center;flex:none;font-size:10px;line-height:18px;font-weight:500;color:#667085;white-space:nowrap}
 .paybtn{padding:2px 12px!important}
 .paybtn b{display:block;font-size:16px;line-height:22px}
 .paybtn small{display:block;font-size:12px;line-height:16px;opacity:1}
@@ -369,8 +371,10 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ps-wrap{padding:12px 16px;background:#fff}
 .ps-card{background:#fff;border:1px solid #EAECF0;border-radius:12px;padding:8px 4px;cursor:pointer;transition:padding .35s cubic-bezier(.2,.8,.2,1),border-radius .35s}
 .ps-card.open{padding:12px;border-radius:16px}
-.ps-top{display:flex;align-items:center;justify-content:space-between}
-.ps-info{display:flex;align-items:center;gap:6px;padding:0;white-space:nowrap;color:#475467;font-size:14px;line-height:20px}
+.ps-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+/* the breakdown on the right is fixed-width; at ₹10,000 the wallet line yields instead of overflowing */
+.ps-info{display:flex;align-items:center;gap:2px;padding:0;min-width:0;white-space:nowrap;color:#475467;font-size:14px;line-height:20px}
+.ps-info>span{overflow:hidden;text-overflow:ellipsis}
 .ps-pay{font-weight:500;margin-right:4px}
 .ps-card.open .ps-pay{color:#475467}
 .ps-gst{font-size:12px;line-height:18px;margin-right:4px}
@@ -382,6 +386,7 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ps-card.plain .ps-get .amt-get{color:#475467}
 .ps-card.extra .ps-get .amt-get{color:#027A48}
 .ps-card.open .ps-get{opacity:0;width:0;overflow:hidden}
+/* same chevron as the See More Options control */
 .ps-chev{width:22px;height:22px;flex-shrink:0}
 .ps-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.2,.8,.2,1)}
 .ps-card.open .ps-details{grid-template-rows:1fr}
@@ -702,7 +707,7 @@ function summaryHTML(gst){
     <div class="ps-card ${open?'open':''} ${extra?'extra':'plain'} ${under?'under':''}" role="button" tabindex="0" data-hot data-paytoggle aria-expanded="${open}">
       <div class="ps-top">
         <p class="ps-info"><img src="${I['wallet-14']}" alt="" width="16" height="16"><span>You get <b class="amt-get">₹${fmt(total)}</b> in wallet</span></p>
-        <span class="ps-link">Details <img class="chev ps-chev ${open?'up':''}" src="${I.chevron}" alt=""></span>
+        <span class="ps-link">₹${fmt(sel)} + ₹${fmt(gst)} GST <img class="chev ps-chev ${open?'up':''}" src="${I.chevron}" alt=""></span>
       </div>
       <div class="ps-details"><div class="ps-inner">
         <div class="ps-sec">
@@ -773,7 +778,7 @@ function renderAB(){
       </div>
     </div>
     <div class="ab-body" id="abBody">
-      ${ab.banner?`<div class="banner"><img class="bn-stars" src="${I.stars}" alt="" aria-hidden="true"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
+      ${ab.banner?`<div class="banner"><img class="bn-stars" src="${I.stars}" alt="" aria-hidden="true"><img class="bn-icon" src="${I.discount}" alt="" width="28" height="28"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
         <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
       </div></div>
