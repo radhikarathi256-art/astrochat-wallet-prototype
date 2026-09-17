@@ -155,7 +155,10 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .ab-body::-webkit-scrollbar{display:none}
 .banner{position:relative;background:#027A48;border-radius:16px;overflow:hidden;margin-bottom:-20px;display:flex;gap:8px;align-items:center;padding:8px 16px 28px;color:#fff;font-size:12px;line-height:17px;font-weight:500;letter-spacing:.36px;animation:drop .4s ease-out}
 .banner b{font-weight:800;font-size:14px;letter-spacing:.42px;color:#fff;font-variant-numeric:tabular-nums}
-.banner .bn-txt{flex:1;min-width:0}
+.banner .bn-txt{position:relative;z-index:1;flex:1;min-width:0}
+/* decorative sparkle field tucked into the top-right corner, faded out towards the text */
+.banner .bn-stars{position:absolute;top:0;right:0;width:236px;height:44px;object-fit:cover;object-position:right top;pointer-events:none;z-index:0;
+  -webkit-mask-image:linear-gradient(to left,#000 35%,transparent 100%);mask-image:linear-gradient(to left,#000 35%,transparent 100%)}
 .banner .bn-sub{font-size:12px;line-height:17px;font-weight:500;color:#fff;margin-top:2px}
 .banner .bn-sub b{font-weight:800;font-size:14px;letter-spacing:.42px;color:#fff}
 .banner .bn-sub s{opacity:.75}
@@ -770,7 +773,7 @@ function renderAB(){
       </div>
     </div>
     <div class="ab-body" id="abBody">
-      ${ab.banner?`<div class="banner"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
+      ${ab.banner?`<div class="banner"><img class="bn-stars" src="${I.stars}" alt="" aria-hidden="true"><img class="bell" src="${I.bell}" alt="" width="24" height="24"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
         <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
       </div></div>
