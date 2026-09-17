@@ -684,7 +684,7 @@ function stripInner(){
     const tail = flowAstro ? ` to chat with ${nm}${showRate?rate:''}` : (showRate?` to chat${rate}`:'');
     return `<div class="strip gx"><span>You Get <b>₹${fmt(b)} Extra</b>${tail}</span></div>`;
   }
-  if(b===0) return `<div class="strip nb50"><span>Earn <b>₹${fmt(bonusFor(250))} Extra</b> On <b>₹250</b> Recharge</span></div>`;
+  if(b===0) return `<div class="strip nb50"><span><b>92%</b> pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
   return '';
 }
 function cdText(){
@@ -695,8 +695,8 @@ function cdText(){
 function heroDigits(v){const s=fmt(v);return `<span class="stk" aria-hidden="true">${s}</span>${s.slice(0,-1)}<span class="last">${s.slice(-1)}</span>`}
 function tileHTML(list){
   return list.map(([v])=>{
-    // the tile badge shows the standing wallet bonus; the ₹50 coupon is stated in the banner
-    const b=(BASE.find(x=>x[0]===v)||[])[1], on=v===ab.sel;
+    // the badge includes the coupon, so under ASTRO50 a ₹50 tile shows +₹50 and ₹100 shows +₹60
+    const b=bonusFor(v), on=v===ab.sel;
     const coins=(v===250)?`<span class="coinfall" aria-hidden="true"><i class="coin"></i><i class="coin"></i><i class="coin"></i><i class="coin"></i><i class="coin"></i></span>`:'';
     return `<div class="tile-col">
       <button class="tile ${ab.justSel===v?'justpick':''}" data-hot data-tile="${v}" aria-pressed="${on}" aria-label="Recharge ₹${fmt(v)}${b?`, ₹${fmt(b)} bonus`:''}">
