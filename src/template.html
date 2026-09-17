@@ -153,7 +153,9 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .wbadge{background:var(--g100);border-radius:20px;display:flex;gap:8px;align-items:center;padding:4px 8px;font-weight:600;font-size:12px;line-height:18px;color:var(--g600)}
 .ab-body{position:absolute;top:64px;left:0;right:0;bottom:0;overflow-y:auto;padding:24px 16px 170px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .ab-body::-webkit-scrollbar{display:none}
-.banner{position:relative;background:#027A48;border-radius:16px;overflow:hidden;margin-bottom:-20px;display:flex;gap:8px;align-items:center;padding:8px 16px 28px;color:#fff;font-size:12px;line-height:17px;font-weight:500;letter-spacing:.36px;animation:drop .4s ease-out}
+/* square bottom corners: the wallet card sits on top of them, so rounding there only showed
+   as two nicks of green either side of the card */
+.banner{position:relative;background:#027A48;border-radius:16px 16px 0 0;overflow:hidden;margin-bottom:-20px;display:flex;gap:8px;align-items:center;padding:8px 16px 28px;color:#fff;font-size:12px;line-height:17px;font-weight:500;letter-spacing:.36px}
 .banner b{font-weight:800;font-size:14px;letter-spacing:.42px;color:#fff;font-variant-numeric:tabular-nums}
 .banner .bn-txt{position:relative;z-index:1;flex:1;min-width:0}
 /* decorative sparkle field tucked into the top-right corner, faded out towards the text.
@@ -166,7 +168,12 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .banner .bn-icon{position:relative;z-index:1;flex:none;width:28px;height:28px;transform-origin:50% 50%;animation:seal 3.2s ease-in-out infinite}
 /* discount seal: rests, then gives one wobble-pop so it reads as a stamp, not an alert */
 @keyframes seal{0%,72%,100%{transform:scale(1) rotate(0)}79%{transform:scale(1.14) rotate(-9deg)}87%{transform:scale(1.14) rotate(9deg)}94%{transform:scale(1.05) rotate(0)}}
-@keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+/* entrance: the banner starts fully tucked behind the "Your Wallet Gets" card (the card is
+   z-index 2, the banner is not) and slides up out of it. Applied only on the first render —
+   rerenderAB() re-mounts the whole screen on every tile tap, so without the .bn-in gate the
+   banner would replay this and appear to jump each time a SKU is selected. */
+.banner.bn-in{animation:riseFromCard .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes riseFromCard{from{transform:translateY(100%)}to{transform:none}}
 
 /* insufficient balance warning (Figma 4604:32678): rises from behind the card when ₹50 is picked */
 .warn-wrap{display:grid;grid-template-rows:0fr;margin-bottom:0;transition:grid-template-rows .45s cubic-bezier(.2,.8,.2,1),margin-bottom .45s cubic-bezier(.2,.8,.2,1)}
@@ -773,6 +780,7 @@ function pmSheetHTML(gst){
 function renderAB(){
   const gst=Math.round(ab.sel*.18), strip=stripInner();
   const label=ab.mode==='coupon'?'Coupon Offer Valid For':'Recharge Offer Valid For';
+  const bnIn=ab.banner&&!ab.bnSeen; if(ab.banner) ab.bnSeen=true;
   return `<div class="screen ab">
     <div class="ab-head">
       <div class="ab-nav">
@@ -781,7 +789,7 @@ function renderAB(){
       </div>
     </div>
     <div class="ab-body" id="abBody">
-      ${ab.banner?`<div class="banner"><img class="bn-stars" src="${I.stars}" alt="" aria-hidden="true"><img class="bn-icon" src="${I.discount}" alt="" width="28" height="28"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
+      ${ab.banner?`<div class="banner${bnIn?' bn-in':''}"><img class="bn-stars" src="${I.stars}" alt="" aria-hidden="true"><img class="bn-icon" src="${I.discount}" alt="" width="28" height="28"><div class="bn-txt">${ab.mode==='coupon'?`<p><b>ASTRO50</b> applied</p><p class="bn-sub">₹50 extra · ends in <b id="cd">${cdText()}</b></p>`:ab.mode==='offer'?`<p>First 5 mins chat at <b>₹5/min</b> · <b>80% Off</b></p><p class="bn-sub">Offer ends in <b id="cd">${cdText()}</b></p>`:`<p>${label} <b id="cd">${cdText()}</b></p>`}</div><span class="sweep"></span></div>`:''}
       <div class="warn-wrap ${ab.warnShown?'open':''}" id="warnWrap" aria-hidden="${!ab.warnShown}"><div class="warn-inner">
         <div class="warn"><img src="${I['warning-red']}" alt="" width="24" height="24"><p><b>To connect with ${flowAstro},</b><br>need wallet balance of <b>4 min (₹${ASTRO_RATE*4})</b></p></div>
       </div></div>
