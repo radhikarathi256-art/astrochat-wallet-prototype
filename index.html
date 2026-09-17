@@ -672,11 +672,12 @@ let flowType='wallet'; // 'insufficient' when the user came from an astrologer's
 // bonus ÷ amount = how many MORE minutes the bonus buys. Deliberately not bonus ÷ (amount+bonus),
 // which is how much CHEAPER each minute gets (₹250: 20% more minutes, but only 17% cheaper).
 // The astrologer's rate cancels out of bonus ÷ amount, so this line needs no rate to be true.
+// Only the quantity is bold; the words that qualify it stay regular weight.
 function moreMinutes(bonus,amount){
   const p=bonus/amount;
-  if(p===1) return 'double&nbsp;the&nbsp;minutes';
-  if(p>1) return `${+(p.toFixed(1))}×&nbsp;the&nbsp;minutes`;
-  return `${Math.round(p*100)}%&nbsp;more&nbsp;minutes`;
+  if(p===1) return '<b>double</b>&nbsp;the&nbsp;minutes';
+  if(p>1) return `<b>${+(p.toFixed(1))}×</b>&nbsp;the&nbsp;minutes`;
+  return `<b>${Math.round(p*100)}%</b>&nbsp;more&nbsp;minutes`;
 }
 function stripInner(){
   const b=bonusFor(ab.sel);
@@ -684,7 +685,7 @@ function stripInner(){
   if(b>0){ // Figma 4573:1698
     const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
     const tail = flowAstro ? ` with&nbsp;${nm}` : ''; // dropped on the wallet entry, where no astrologer is known
-    return `<div class="strip gx"><span>You get <b>₹${fmt(b)} extra</b> + <b>${moreMinutes(b,ab.sel)}</b>${tail}</span></div>`;
+    return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra + ${moreMinutes(b,ab.sel)}${tail}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>92% users pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
   return '';
