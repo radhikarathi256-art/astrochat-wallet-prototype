@@ -686,10 +686,11 @@ function stripInner(){
   const b=bonusFor(ab.sel);
   if(ab.mode==='coupon'&&!ab.banner) return '';
   if(b>0){ // Figma 4573:1698
-    const nm = (flowAstro||'').replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
-    const tail = flowAstro ? ` with&nbsp;${nm}` : ''; // dropped on the wallet entry, where no astrologer is known
-    const noun = flowAstro ? 'session' : 'sessions'; // plural on the wallet chip: no one session in view
-    return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra + ${noun} <b>${cheaperPct(b,ab.sel)}%</b>&nbsp;cheaper${tail}</span></div>`;
+    // Wallet entry: just the extra. The "% cheaper" half is only shown when an astrologer is
+    // known, since it is a claim about their session.
+    if(!flowAstro) return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra</span></div>`;
+    const nm = flowAstro.replace(/ /g,'&nbsp;'); // never split the astrologer's name across lines
+    return `<div class="strip gx"><span>You get <b>₹${fmt(b)}</b>&nbsp;extra + session <b>${cheaperPct(b,ab.sel)}%</b>&nbsp;cheaper with&nbsp;${nm}</span></div>`;
   }
   if(b===0) return `<div class="strip nb50"><span>92% users pick <b>₹250</b> &amp; get <b>₹${fmt(bonusFor(250))} extra</b></span></div>`;
   return '';
