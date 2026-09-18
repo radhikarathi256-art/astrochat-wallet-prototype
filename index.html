@@ -305,24 +305,15 @@ body.mobile .phone{border-radius:0;box-shadow:none}
 .bonus.nudge{border:0;cursor:pointer;font-size:11px;letter-spacing:0;padding:4px 7px;background:linear-gradient(180deg,#F79009,#DC6803);box-shadow:0 2px 6px rgba(220,104,3,.35);animation:nudge 2.4s ease-in-out infinite}
 @keyframes nudge{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(-2px)}86%{transform:translateY(0)}92%{transform:translateY(-1px)}}
 .coinfall{position:absolute;inset:0;border-radius:13px;overflow:hidden;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(90deg,#000 0 21%,transparent 24% 76%,#000 79% 100%);mask-image:linear-gradient(90deg,#000 0 21%,transparent 24% 76%,#000 79% 100%)}
-/* --lean tips the coin's top OUTWARD, away from the tile's centre, and --spin keeps it turning
-   in the same outward direction as it falls. Coins in the right-hand column flip both signs. */
-.coinfall .coin{position:absolute;top:0;opacity:0;animation:coinFall 3.6s linear infinite;--lean:-17deg;--spin:-38deg}
+.coinfall .coin{position:absolute;top:0;opacity:0;animation:coinFall 3.6s linear infinite}
 .coinfall{opacity:1;transition:opacity .2s ease}
 .tile[aria-pressed="true"] .coinfall{opacity:0} /* selected tile: stop the coin shower */
 .coinfall .coin:nth-child(1){left:2%;width:15px;height:15px;animation-delay:0s}
-.coinfall .coin:nth-child(2){left:81%;width:15px;height:15px;animation-delay:.9s;--lean:17deg;--spin:38deg}
+.coinfall .coin:nth-child(2){left:81%;width:15px;height:15px;animation-delay:.9s}
 .coinfall .coin:nth-child(3){left:4%;width:13px;height:13px;animation-delay:1.8s}
-.coinfall .coin:nth-child(4){left:83%;width:13px;height:13px;animation-delay:2.7s;--lean:17deg;--spin:38deg}
+.coinfall .coin:nth-child(4){left:83%;width:13px;height:13px;animation-delay:2.7s}
 .coinfall .coin:nth-child(5){left:1%;width:14px;height:14px;animation-delay:3.3s}
-/* translateY stays outside perspective() so the fall itself isn't distorted; rotateX foreshortens
-   the disc into an ellipse (the 3D read), rotateY turns it slowly without ever going edge-on. */
-@keyframes coinFall{
-  0%{transform:translateY(-22px) perspective(150px) rotateZ(var(--lean)) rotateX(27deg) rotateY(0deg);opacity:0}
-  12%{opacity:.95}
-  80%{opacity:.95}
-  100%{transform:translateY(82px) perspective(150px) rotateZ(calc(var(--lean) + var(--spin))) rotateX(27deg) rotateY(64deg);opacity:0}
-}
+@keyframes coinFall{0%{transform:translateY(-22px) rotate(0);opacity:0}12%{opacity:.95}80%{opacity:.95}100%{transform:translateY(82px) rotate(220deg);opacity:0}}
 .tile .val{z-index:1}
 .tile .sel{z-index:2}
 .bonus{position:relative;z-index:3;margin-top:-15px;padding:4px 8px;border-radius:12px;color:#fff;font-weight:600;font-size:12px;line-height:18px;letter-spacing:-.12px;white-space:nowrap;background:linear-gradient(-0.556deg,#05603A 10.094%,#027A48 23.329%,#027A48 83.868%,rgba(2,122,72,0) 109.72%);}
